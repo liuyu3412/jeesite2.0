@@ -1,0 +1,144 @@
+
+.line{
+	background:url(../images/line.png) center bottom no-repeat;
+	background-size:100% 4px;
+}
+
+.list_new li{
+	padding:0 20px;
+	overflow: auto;
+	height:30px;
+	font-size: 14px;
+}
+
+.ping{
+	padding:0 30px;
+	margin-top: 10px;
+	overflow: auto;
+}
+
+.ping li{
+	width:110px;
+	margin-right: 2px;
+	float: left;
+	text-align: center;
+	color:#fff;
+	height:10px;
+}
+
+.zi li{
+	height:32px;
+	line-height: 32px;
+}
+
+.gray_b{
+	border-bottom: 3px solid #abacab;
+}
+
+.blue{
+	background: #5dcfff;
+}
+
+.blue_b{
+	border-bottom: 3px solid #5dcfff;
+}
+
+.blue_j{
+	border-right: 10px solid transparent; 
+	border-bottom: 10px solid #5DCFFF; 
+	border-left: 10px solid transparent; 
+	margin: auto;
+	width:3px;
+}
+
+.green{
+	background: #6dd2a8;
+}
+
+.green_b{
+	border-bottom: 3px solid #6dd2a8;
+}
+
+.green_j{
+	border-right: 10px solid transparent; 
+	border-bottom: 10px solid #6dd2a8; 
+	border-left: 10px solid transparent; 
+	margin: auto;
+	width:3px;
+}
+
+.yellow{
+	background: #ddcf2d;
+}
+
+.yellow_b{
+	border-bottom: 3px solid #ddcf2d;
+}
+
+.yellow_j{
+	border-right: 10px solid transparent; 
+	border-bottom: 10px solid #ddcf2d; 
+	border-left: 10px solid transparent; 
+	margin: auto;
+	width:3px;
+}
+
+.red{
+	background: #dc8251;
+}
+
+.red_b{
+	border-bottom: 3px solid #dc8251;
+}
+
+.red_j{
+	border-right: 10px solid transparent; 
+	border-bottom: 10px solid #dc8251; 
+	border-left: 10px solid transparent; 
+	margin: auto;
+	width:3px;
+}
+
+.title_h4{
+	padding:0;
+	margin:0 40px;
+	line-height:45px;
+	color:#6d6f71;
+	font-size: 16px;
+}
+
+.jiaoyi{
+	width: 100px;
+	height: 100px;
+	border-radius:50%;
+	border: 5px #e4e4e4 solid;
+	box-shadow:1px 1px 5px #0384fc;
+	text-align: center;
+	display: table;
+	color:#969494;
+	margin: 10px 50px;
+	
+}
+
+.jiaoyi p{
+	display: table-cell;
+	vertical-align: middle;
+	width:50px;
+}
+
+.jiaoyi p font{
+	color: #5eb1fd;
+	font-size: 30px;
+	font-weight: bold;
+	line-height: 30px;
+}
+
+.cb2{
+	color:#5eb1fd;
+	font-weight: bold;
+	font-size: 50px;
+ }
+ 
+.center{text-align: center;}
+ 
+.mine{background: rgba(255,230,230,0.5)}

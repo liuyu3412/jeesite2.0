@@ -1,0 +1,32 @@
+{
+  "code": 0,
+  "data": {
+    "mine": {
+      "avatar": "http://cdn.firstlinkapp.com/upload/2016_6/1465575923433_33812.jpg",
+      "id": "100000",
+      "sign": "--",
+      "status": "online",
+      "username": "纸飞机"
+    },
+    "friend": [{
+      "groupname": "前端码屌",
+      "id": 1,
+      "list": [{
+        "avatar": "http://tp1.sinaimg.cn/1571889140/180/40030060651/1",
+        "id": "100001",
+        "sign": "--",
+        "username": "贤心"
+      }],
+      "online": 2
+    }] ,"group": [{
+      "groupname": "前端群"
+    ,"id": "101"
+    ,"avatar": "http://tp2.sinaimg.cn/2211874245/180/40050524279/0"
+    },{
+      "groupname": "Fly社区官方群"
+    ,"id": "102"
+    ,"avatar": "http://tp2.sinaimg.cn/5488749285/50/5719808192/1"
+    }]
+  },
+  "msg": ""
+}

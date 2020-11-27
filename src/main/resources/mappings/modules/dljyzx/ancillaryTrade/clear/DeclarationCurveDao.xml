@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryTrade.clear.DeclarationCurveDao">
+	<sql id="declarationCurveJoins">
+	</sql>
+	<sql id="declarationCurveColumns">
+
+		a.BID_DATE AS  "bidDate",
+		a.CONS_NO  AS  "consumerNumber",
+		a.POINT1	AS		"timePoint1",
+		a.POINT2		AS		"timePoint2",
+		a.POINT3		AS		"timePoint3" ,
+		a.POINT4		AS		"timePoint4" ,
+		a.POINT5		AS		"timePoint5" ,
+		a.POINT6		AS		"timePoint6" ,
+		a.POINT7		AS		"timePoint7" ,
+		a.POINT8		AS		"timePoint8" ,
+		a.POINT9		AS		"timePoint9" ,
+		a.POINT10		AS		"timePoint10" ,
+		a.POINT11		AS		"timePoint11" ,
+		a.POINT12		AS		"timePoint12" ,
+		a.POINT13		AS		"timePoint13" ,
+		a.POINT14		AS		"timePoint14" ,
+		a.POINT15		AS		"timePoint15" ,
+		a.POINT16		AS		"timePoint16" ,
+		a.POINT17		AS		"timePoint17" ,
+		a.POINT18		AS		"timePoint18" ,
+		a.POINT19		AS		"timePoint19" ,
+		a.POINT20		AS		"timePoint20" ,
+		a.POINT21		AS		"timePoint21" ,
+		a.POINT22		AS		"timePoint22" ,
+		a.POINT23		AS		"timePoint23" ,
+		a.POINT24		AS		"timePoint24" ,
+		a.POINT25		AS		"timePoint25" ,
+		a.POINT26		AS		"timePoint26" ,
+		a.POINT27		AS		"timePoint27" ,
+		a.POINT28		AS		"timePoint28" ,
+		a.POINT29		AS		"timePoint29" ,
+		a.POINT30		AS		"timePoint30" ,
+		a.POINT31		AS		"timePoint31" ,
+		a.POINT32		AS		"timePoint32" ,
+		a.POINT33		AS		"timePoint33" ,
+		a.POINT34		AS		"timePoint34" ,
+		a.POINT35		AS		"timePoint35" ,
+		a.POINT36		AS		"timePoint36" ,
+		a.POINT37		AS		"timePoint37" ,
+		a.POINT38		AS		"timePoint38" ,
+		a.POINT39		AS		"timePoint39" ,
+		a.POINT40		AS		"timePoint40" ,
+		a.POINT41		AS		"timePoint41" ,
+		a.POINT42		AS		"timePoint42" ,
+		a.POINT43		AS		"timePoint43" ,
+		a.POINT44		AS		"timePoint44" ,
+		a.POINT45		AS		"timePoint45" ,
+		a.POINT46		AS		"timePoint46" ,
+		a.POINT47		AS		"timePoint47" ,
+		a.POINT48		AS		"timePoint48" ,
+		a.POINT49		AS		"timePoint49" ,
+		a.POINT50		AS		"timePoint50" ,
+		a.POINT51		AS		"timePoint51" ,
+		a.POINT52		AS		"timePoint52" ,
+		a.POINT53		AS		"timePoint53" ,
+		a.POINT54		AS		"timePoint54" ,
+		a.POINT55		AS		"timePoint55" ,
+		a.POINT56		AS		"timePoint56" ,
+		a.POINT57		AS		"timePoint57" ,
+		a.POINT58		AS		"timePoint58" ,
+		a.POINT59		AS		"timePoint59" ,
+		a.POINT60		AS		"timePoint60" ,
+		a.POINT61		AS		"timePoint61" ,
+		a.POINT62		AS		"timePoint62" ,
+		a.POINT63		AS		"timePoint63" ,
+		a.POINT64		AS		"timePoint64" ,
+		a.POINT65		AS		"timePoint65" ,
+		a.POINT66		AS		"timePoint66" ,
+		a.POINT67		AS		"timePoint67" ,
+		a.POINT68		AS		"timePoint68" ,
+		a.POINT69		AS		"timePoint69" ,
+		a.POINT70		AS		"timePoint70" ,
+		a.POINT71		AS		"timePoint71" ,
+		a.POINT72		AS		"timePoint72" ,
+		a.POINT73		AS		"timePoint73" ,
+		a.POINT74		AS		"timePoint74" ,
+		a.POINT75		AS		"timePoint75" ,
+		a.POINT76		AS		"timePoint76" ,
+		a.POINT77		AS		"timePoint77" ,
+		a.POINT78		AS		"timePoint78" ,
+		a.POINT79		AS		"timePoint79" ,
+		a.POINT80		AS		"timePoint80" ,
+		a.POINT81		AS		"timePoint81" ,
+		a.POINT82		AS		"timePoint82" ,
+		a.POINT83		AS		"timePoint83" ,
+		a.POINT84		AS		"timePoint84" ,
+		a.POINT85		AS		"timePoint85" ,
+		a.POINT86		AS		"timePoint86" ,
+		a.POINT87		AS		"timePoint87" ,
+		a.POINT88		AS		"timePoint88" ,
+		a.POINT89		AS		"timePoint89" ,
+		a.POINT90		AS		"timePoint90" ,
+		a.POINT91		AS		"timePoint91" ,
+		a.POINT92		AS		"timePoint92" ,
+		a.POINT93		AS		"timePoint93",
+		a.POINT94		AS		"timePoint94",
+		a.POINT95		AS		"timePoint95",
+		a.POINT96		AS		"timePoint96"
+	</sql>
+
+
+	<select id="findList" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.clear.DeclarationCurve">
+		select  <include refid="declarationCurveColumns" />
+		FROM JS_AS_TRADE_BID a
+		<include refid="declarationCurveJoins"/>
+		<where>
+			a.CONS_NO =#{consumerNumber}
+			and
+			date_format(a.BID_DATE,'%Y-%m-%d')  = #{bidDate}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getPoint" resultType="map">
+		select  * from  JS_AS_TRADE_BID
+		<where>
+			CONS_NO =#{consumerNumber}
+			and
+			date_format(BID_DATE,'%Y-%m-%d')=#{bidDate}
+		</where>
+	</select>
+
+	<select id="getTimePoint" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.clear.DeclarationCurve">
+		select  timeInfo.TIME AS  "time" ,     timeInfo.START_TIME  as  "startTime", timeInfo.END_TIME as  "endTime"   from  JS_AS_TIME_DEFINITION_DETAIL  timeInfo
+		<where>
+			timeInfo.TIME_ID =2
+		</where>
+		order by timeInfo.TIME
+	</select>
+
+
+	<select id="getFiveTimePoint"  resultType="map">
+		select  a.INTERVAL AS "interval" , a.NAME as  "name"
+		 from JS_AS_TIME_SEGMENT a
+	</select>
+</mapper>

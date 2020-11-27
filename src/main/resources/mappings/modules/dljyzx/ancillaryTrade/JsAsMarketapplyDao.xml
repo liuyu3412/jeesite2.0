@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryTrade.JsAsMarketapplyDao">
+
+    <select id="findList" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsMarketapply">
+        SELECT
+        b.CONSID AS "userId",
+        c.PARTICIPANTNAME AS "consName",
+        d.GUID,
+        d.COM_PERSON,
+        date_format(d.APPLY_DATE,'%Y-%m-%d') AS "applyDateStr",
+        d.TEL,
+        d.PROMISE_ATTACHID,
+        d.AGREEMENT_ATTACHID,
+        d.AUDIT_CONTENT
+        /*DECODE( d.STATUS, '00', '已保存', '01', '已提交', '08', '已通过', '09', '未通过',NULL, '未申请' ) AS STATUS*/
+        FROM
+        BA_SELLER_CONS_RELATION b
+        LEFT JOIN JS_AS_MARKETAPPLY d ON ( b.CONSID = d.USER_ID AND d.YEAR = #{year} )
+        INNER JOIN BA_MARKETPARTICIPANT c ON b.CONSID = c.PARTICIPANTID
+        <where>
+            b.MARKETID = '95412'
+            AND date_format(b.EFFECTIVE_DATA, '%Y') = #{year}
+            AND b.PARTICIPANTID = #{participantId}
+            <if test="consName!='' and consName!=null">
+                AND c.PARTICIPANTNAME like concat(concat('%',#{consName}),'%')
+            </if>
+            <if test="status=='-1'">
+                AND d.STATUS IS NULL
+            </if>
+            <if test="status!='' and status!=null and status!='-1'">
+                AND d.STATUS=#{status}
+            </if>
+        </where>
+        ORDER BY d.CREATE_TIME ASC
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findList1" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsMarketapply">
+        SELECT
+        a.PARTICIPANTID AS "userId",
+        a.PARTICIPANTNAME AS "consName",
+        b.GUID,
+        b.COM_PERSON,
+        b.TEL,
+        date_format(b.APPLY_DATE,'%Y-%m-%d') AS "applyDateStr",
+        b.PROMISE_ATTACHID,
+        b.AGREEMENT_ATTACHID,
+        b.AUDIT_CONTENT
+        /*DECODE( b.STATUS, '00', '已保存', '01', '已提交', '08', '已通过', '09', '未通过' ) AS STATUS*/
+        FROM
+        BA_MARKETPARTICIPANT a LEFT JOIN JS_AS_MARKETAPPLY b ON (a.PARTICIPANTID=b.PARTICIPANT_ID AND b.YEAR=#{year})
+        <where>
+            a.PARTICIPANTID = #{participantId}
+            AND a.MARKETID='95412'
+            <if test="consNo!='' and consNo!=null">
+                AND a.CONS_NO=#{consNo}
+            </if>
+            <if test="consName!='' and consName!=null">
+                AND c.PARTICIPANTNAME like concat(concat('%',#{consName}),'%')
+            </if>
+            <if test="status=='-1'">
+                AND d.STATUS IS NULL
+            </if>
+            <if test="status!='' and status!=null and status!='-1'">
+                AND d.STATUS=#{status}
+            </if>
+        </where>
+        ORDER BY b.CREATE_TIME ASC
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insertConsNo">
+        INSERT INTO JS_AS_MARKETAPPLY_CONSNO ( MARKETAPPLY_ID, AREA_ID, PARTICIPANT_ID, CONS_NAME, CONS_NO, SHARE_RATE, PENALTY_RATE, ADDRESS, SHARE_SELLER_RATE, PENALTY_SELLER_RATE, USER_ID, YEAR)
+        VALUES
+            (
+                #{marketapplyId},
+                #{areaId},
+                #{participantId},
+                #{consName},
+                #{consNo},
+                #{shareRate},
+                #{penaltyRate},
+                #{address},
+                #{shareSellerRate},
+                #{penaltySellerRate},
+                #{userId},
+                #{year}
+            )
+    </insert>
+
+    <delete id="deleteConsNo">
+        delete from JS_AS_MARKETAPPLY_CONSNO where MARKETAPPLY_ID=#{guid}
+    </delete>
+
+    <update id="updatePVK">
+        UPDATE t_mx_attachment SET
+			PK_VAL = #{guid}
+		WHERE ATTACHMENT_ID = #{attid}
+    </update>
+
+    <select id="getConsNos" resultType="map">
+        SELECT
+            CONS_NO AS "consNo"
+        FROM
+            BA_MKTAADMINLOAD
+        WHERE
+            PARTICIPANT_ID = #{pid}
+            AND (
+            date_format( INVALID_DATE,'%Y-%m-%d' ) >= date_format( now(),'%Y-%m-%d' )
+            OR INVALID_DATE IS NULL)
+    </select>
+
+    <select id="getConsNosSeller" resultType="map">
+        SELECT
+            CONS_NO AS "consNo"
+        FROM
+            BA_MKTAADMINLOAD
+        WHERE
+            PARTICIPANT_ID in (SELECT CONSID FROM BA_SELLER_CONS_RELATION WHERE PARTICIPANTID=#{pid} GROUP BY CONSID)
+            AND (
+            date_format( INVALID_DATE,'%Y-%m-%d' ) >= date_format( now(),'%Y-%m-%d' )
+            OR INVALID_DATE IS NULL)
+    </select>
+
+    <select id="getUserInfo" resultType="map">
+        SELECT PARTICIPANTTYPE FROM BA_MARKETPARTICIPANT WHERE PARTICIPANTID=#{pid}
+    </select>
+
+    <select id="findById" parameterType="string" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsMarketapply">
+        SELECT
+        a.GUID,
+        a.CONS_NO,
+        a.AREA_ID,
+        a.SHARE_RATE,
+        a.PENALTY_RATE,
+        a.SHARE_SELLER_RATE,
+        a.PENALTY_SELLER_RATE,
+        a.COM_PERSON,
+        a.TEL,
+        a.ADDRESS,
+        a.STATUS,
+        a.PROMISE_ATTACHID,
+        a.AGREEMENT_ATTACHID,
+        a.USER_ID,
+        a.YEAR,
+        b.NAME AS "areaName",
+        ( SELECT c.ATT_NAME FROM T_MX_ATTACHMENT c WHERE a.PROMISE_ATTACHID = c.ATTACHMENT_ID ) AS PROMISE_ATTACHNAME,
+        ( SELECT d.ATT_NAME FROM T_MX_ATTACHMENT d WHERE a.AGREEMENT_ATTACHID = d.ATTACHMENT_ID ) AS AGREEMENT_ATTACHNAME
+        FROM
+        JS_AS_MARKETAPPLY a
+        LEFT JOIN JS_AS_AREA b ON a.AREA_ID = b.ID
+        WHERE a.GUID=#{guid}
+    </select>
+
+    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsMarketapply">
+        INSERT INTO JS_AS_MARKETAPPLY (
+            GUID,
+            PARTICIPANT_ID,
+            CONS_NAME,
+            IS_SELLER,
+            COM_PERSON,
+            TEL,
+            APPLY_DATE,
+            STATUS,
+            PROMISE_ATTACHID,
+            AGREEMENT_ATTACHID,
+            CREATE_TIME,
+            USER_ID,
+            YEAR
+        )
+        VALUES
+            (
+                #{guid},
+                #{participantId},
+                #{consName},
+                #{isSeller},
+                #{comPerson},
+                #{tel},
+                #{applyDate},
+                #{status},
+                #{promiseAttachid},
+                #{agreementAttachid},
+                now(),
+                #{userId},
+                #{year}
+            )
+    </insert>
+
+    <update id="update">
+      UPDATE JS_AS_MARKETAPPLY
+      <set>
+        <if test="consNo!='' and consNo!=null ">
+            CONS_NO = #{consNo},
+        </if>
+          <if test="isSeller!='' and isSeller!=null ">
+              IS_SELLER = #{isSeller},
+          </if>
+        <if test="shareRate!='' and shareRate!=null ">
+            SHARE_RATE = #{shareRate},
+        </if>
+        <if test="penaltyRate!='' and penaltyRate!=null ">
+            PENALTY_RATE = #{penaltyRate},
+        </if>
+          <if test="shareSellerRate!='' and shareSellerRate!=null ">
+              SHARE_SELLER_RATE = #{shareSellerRate},
+          </if>
+          <if test="penaltySellerRate!='' and penaltySellerRate!=null ">
+              PENALTY_SELLER_RATE = #{penaltySellerRate},
+          </if>
+        <if test="comPerson!='' and comPerson!=null ">
+            COM_PERSON = #{comPerson},
+        </if>
+        <if test="tel!='' and tel!=null ">
+            TEL = #{tel},
+        </if>
+        <if test="address!='' and address!=null ">
+            ADDRESS = #{address},
+        </if>
+        <if test="status!='' and status!=null ">
+            STATUS = #{status},
+        </if>
+        <if test="applyDate!='' and applyDate!=null ">
+            APPLY_DATE = #{applyDate},
+        </if>
+      </set>
+      WHERE
+          GUID = #{guid}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE JS_AS_MARKETAPPLY SET STATUS='01',APPLY_DATE=now() WHERE STATUS='00' AND GUID = #{guid}
+    </update>
+
+    <select id="hasApply" resultType="decimal">
+        SELECT
+            COUNT( 1 )
+        FROM
+            JS_AS_MARKETAPPLY
+        WHERE
+            YEAR = #{year}
+            AND USER_ID = #{userId}
+            <if test="guid!=null and guid!=''">
+                AND GUID &lt;&gt; #{guid}
+            </if>
+    </select>
+
+    <select id="getName" resultType="string">
+          SELECT
+            a.PARTICIPANTNAME
+        FROM
+            BA_MARKETPARTICIPANT a
+        WHERE
+            a.PARTICIPANTID = #{pid}
+    </select>
+
+    <select id="areaTreeData" resultType="map">
+        SELECT
+            ID AS "id",
+            PARENT_ID AS "pId",
+            NAME AS "name"
+        FROM
+            JS_AS_AREA
+    </select>
+
+    <select id="getAuthMan" resultType="map">
+        SELECT LINKMAN,TELEPHONE FROM JS_AUTHINFO WHERE PID=#{userId}
+    </select>
+
+    <select id="getConsNoByUser" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsMarketapplyConsno">
+        SELECT
+        a.CONS_NO,
+        a.GEOGRREGIONID,
+        d.GUID,
+        d.SHARE_RATE,
+        d.PENALTY_RATE,
+        d.SHARE_SELLER_RATE,
+        d.PENALTY_SELLER_RATE,
+        d.AREA_ID,
+        d.ADDRESS
+        FROM
+        BA_MKTAADMINLOAD a
+        LEFT JOIN ( SELECT * FROM JS_AS_MARKETAPPLY_CONSNO WHERE USER_ID = #{userId} AND YEAR=#{year} ) d ON a.CONS_NO = d.CONS_NO
+        WHERE
+        a.PARTICIPANT_ID = #{userId}
+        AND a.MARKETID = '95412'
+        AND (a.INVALID_DATE &gt; now() OR a.INVALID_DATE IS NULL)
+        AND a.VALID_DATE &lt; now()
+    </select>
+
+    <select id="getAreaName" resultType="string">
+        SELECT NAME FROM JS_AS_AREA WHERE ID=#{areaId}
+    </select>
+</mapper>

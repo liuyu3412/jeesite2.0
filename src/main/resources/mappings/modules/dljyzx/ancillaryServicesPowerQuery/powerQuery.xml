@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryServicesPowerQuery.PowerQueryDao">
+
+
+    <select id="queryData" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryServicesPowerQuery.JsAsPowerQuery">
+
+        SELECT DISTINCT
+        c.cons_no consno
+        FROM
+        JS_AS_CLEARING c,
+        JS_AS_MARKETAPPLY m,
+        JS_AS_MARKETAPPLY_CONSNO mc,
+        JS_AS_TRADESEQ t,
+        JS_AS_TIME_SEGMENT ts
+        WHERE
+        c.cons_no = mc.cons_no
+        and   m.PARTICIPANT_ID = #{participantId}
+        AND m.GUID = mc.MARKETAPPLY_ID
+        AND c.TRADESEQ_ID = t.GUID
+        AND t.TIMESEG_ID = ts.id
+        and date_format(t.ADJUST_DATE,'%Y-%m-%d') = #{date}
+        <if test=" null !=consno and '' !=consno">
+              and  c.cons_no  like concat(concat('%',#{consno}),'%')
+        </if>
+        limit #{nowNum},#{preNum}
+
+
+    </select>
+
+    <select id="queryDataNumber" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryServicesPowerQuery.JsAsPowerQuery">
+SELECT DISTINCT
+        c.cons_no consno
+        FROM
+        JS_AS_CLEARING c,
+        JS_AS_MARKETAPPLY m,
+        JS_AS_MARKETAPPLY_CONSNO mc,
+        JS_AS_TRADESEQ t,
+        JS_AS_TIME_SEGMENT ts
+        WHERE
+        c.cons_no = mc.cons_no
+        and   m.PARTICIPANT_ID = #{participantId}
+        AND m.GUID = mc.MARKETAPPLY_ID
+        AND c.TRADESEQ_ID = t.GUID
+        AND t.TIMESEG_ID = ts.id
+        and date_format(t.ADJUST_DATE,'%Y-%m-%d') = #{date}
+        <if test=" null !=consno and '' !=consno">
+            and  c.cons_no  like concat(concat('%',#{consno}),'%')
+        </if>
+    </select>
+
+
+    <select id="findSeqsByMonth" resultType="String">
+            select date_format(t.ADJUST_DATE,'%Y-%m-%d') ADJUSTDATE
+              from JS_AS_TRADESEQ_CONS tc, JS_AS_TRADESEQ t, JS_AS_CLEARING c
+              where t.GUID = tc.TRADESEQ_ID
+                and tc.PARTICIPANT_ID = #{pId}
+                and t.STATUS = '1'
+                and tc.CONS_NO = c.CONS_NO
+                and tc.TRADESEQ_ID = c.TRADESEQ_ID
+                and c.CLEARING_STATE = '1'
+                and date_format(t.ADJUST_DATE,'%Y-%m') = #{month}
+                group by ADJUST_DATE
+    </select>
+
+    <select id="powereQuery" resultType="map" >
+        select c.cons_no     consno,
+               ts.interval,
+               ts.start_time,
+               date_format(t.ADJUST_DATE,'%Y-%m-%d') ADJUSTDATE,
+               c.TRADESEQ_ID TRADESEQID
+          from JS_AS_CLEARING     c,
+               JS_AS_MARKETAPPLY  m,
+               JS_AS_MARKETAPPLY_CONSNO  mc,
+               JS_AS_TRADESEQ     t,
+               JS_AS_TIME_SEGMENT ts
+         where m.PARTICIPANT_ID = #{participantId}
+           and c.cons_no = mc.cons_no
+           and m.GUID = mc.MARKETAPPLY_ID
+           and c.TRADESEQ_ID = t.GUID
+           and t.TIMESEG_ID = ts.id
+           and date_format(t.ADJUST_DATE,'%Y-%m-%d') = #{date}
+    </select>
+    <select id="queryConso" resultType="String" >
+        select
+            distinct  c.cons_no cons_no
+          from JS_AS_CLEARING     c,
+               JS_AS_MARKETAPPLY  m,
+               JS_AS_MARKETAPPLY_CONSNO  mc,
+               JS_AS_TRADESEQ     t,
+               JS_AS_TIME_SEGMENT ts
+         where m.PARTICIPANT_ID = #{participantId}
+           and c.cons_no = mc.cons_no
+           and m.GUID = mc.MARKETAPPLY_ID
+           and c.TRADESEQ_ID = t.GUID
+           and t.TIMESEG_ID = ts.id
+           and date_format(t.ADJUST_DATE,'%Y-%m-%d') = #{date}
+    </select>
+
+
+
+    <select id="queryActulePower" resultType="map">
+        select * from JS_AS_DAY_POWER dp, JS_AS_TRADESEQ t where CONS_NO = #{consno}
+
+        and dp.RECORD_TIME = t.ADJUST_DATE
+    </select>
+
+
+    <select id ="querylastPower" resultType="map">
+         SELECT * FROM JS_AS_DAY_ENERGY
+         where date_format(RECORD_TIME,'%Y-%m-%d') = #{dayTime}
+         and   CONS_NO =#{consno}
+    </select>
+
+    <select id="queryBaseline" resultType="map">
+  SELECT
+            c.BASE_POWER,
+            d.START_TIME,
+            d.END_TIME,
+            d.INTERVAL,
+            d.ID
+        FROM
+            JS_AS_TIME_SEGMENT d
+            LEFT JOIN (
+            SELECT
+                BASE_POWER,
+                TIMESEG_ID
+            FROM
+                JS_AS_BASELINE
+            WHERE
+                CONS_NO = #{consno}
+                AND TRADESEQ_ID IN (
+                SELECT
+                    a.GUID
+                FROM
+                    JS_AS_TRADESEQ a
+                    LEFT JOIN JS_AS_TRADESEQ_CONS b ON a.GUID = b.TRADESEQ_ID
+                WHERE
+                    b.CONS_NO = #{consno}
+                    AND date_format( a.ADJUST_DATE,'%Y-%m-%d' ) = #{adjustDate}
+                )) c ON d.ID = c.TIMESEG_ID
+        GROUP BY
+            c.BASE_POWER,
+            d.START_TIME,
+            d.END_TIME,
+            d.INTERVAL,
+            d.ID
+        ORDER BY
+            d.ID +0
+    </select>
+
+    <select id="queryTradeBid" resultType="map">
+        select * from JS_AS_TRADE_BID
+          where cons_no = #{consno}
+        and date_format(BID_DATE,'%Y-%m-%d') = #{adjustDate}
+    </select>
+
+    <select id="queryActualElec" resultType="map">
+      select * from JS_AS_DAY_POWER
+        where cons_no = #{consno}
+       and date_format(RECORD_TIME,'%Y-%m-%d') = #{adjustDate}
+    </select>
+
+</mapper>

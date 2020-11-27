@@ -1,0 +1,26 @@
+﻿body, p, form, h1, h2, h3, h4, h5, h6, td, th, table, div, ul, li, ol, dl, dt, dd, img, input, select {	margin:0;padding:0;}
+form table tr td{ font:14px 黑体; color:#535353;padding-top: 10px;}
+form input[type="text"]{
+		width:160px;
+		height: 25px;
+		/* border: solid 1px #C5DDDD; */
+		line-height: 25px;
+}
+.formTable input:not([type]), 
+.formTable input:not([type="text"]){
+	height: 24px;
+	border: 1px solid #c5dddd;
+}
+
+.title_b{
+		padding: 0px;
+		font-family: 黑体;
+		font-size: 14px;
+		color: #006f6b;
+		background-color: #F2FBFA;
+}
+.title_b img{
+	float:right;
+	margin-right: 15px;
+}
+

@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryTrade.JsAsTradeBidDao">
+
+    <select id="findList" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsTradeseq">
+        SELECT
+        a.SEQ_NAME,
+        b.CONS_NO,
+        b.PARTICIPANT_NAME AS "consName",
+        date_format( a.ADJUST_DATE,'%Y-%m-%d' ) AS "adjustDateStr",
+        a.ADJUST_TYPE,
+        a.ADJUST_POWER,
+        date_format( a.BID_START,'%Y-%m-%d %H:%i:%s' ) AS "bidStartStr",
+        date_format( a.BID_END,'%Y-%m-%d %H:%i:%s' ) AS "bidEndStr",
+        d.START_TIME AS "adjustStartStr",
+        d.END_TIME AS "adjustEndStr",
+        c.NAME AS "areaName",
+        b.GUID AS "tradeSeqConsId",
+--         DECODE( e.STATUS, '00', '已保存', '01', '已申报') AS "bidStatus",
+        case 	e.STATUS
+        when '00' then  '已保存'
+        when  '01' then '已申报'
+        end AS "bidStatus",
+        date_format( e.BID_DATE,'%Y-%m-%d %H:%i:%s' ) AS "bidDate"
+        FROM
+        JS_AS_TRADESEQ a
+        LEFT JOIN JS_AS_TRADESEQ_CONS b ON a.GUID = b.TRADESEQ_ID
+        LEFT JOIN JS_AS_AREA c ON a.AREA_IDS = c.ID
+        LEFT JOIN JS_AS_TIME_SEGMENT d ON a.TIMESEG_ID = d.ID
+        LEFT JOIN JS_AS_TRADE_BID_CONS e ON b.GUID = e.TRADESEQ_CONS_ID
+        <where>
+            b.PARTICIPANT_ID = #{pid}
+            AND date_format( a.ADJUST_DATE,'%Y-%m-%d' ) = #{date}
+            AND a.STATUS='1'
+            <if test="consName!='' and consName!=null">
+                AND b.PARTICIPANT_NAME like concat(concat('%',#{consName}),'%')
+            </if>
+            <if test="bidStatus=='-1'">
+                AND e.STATUS IS NULL
+            </if>
+            <if test="bidStatus!='' and bidStatus!=null and bidStatus!='-1'">
+                AND e.STATUS=#{bidStatus}
+            </if>
+        </where>
+        ORDER BY
+            d.SORT,
+            b.PARTICIPANT_NAME
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findSeqsByMonth" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsTradeseq">
+        SELECT mm.* FROM
+        (SELECT
+            a.SEQ_NAME,
+            date_format( a.ADJUST_DATE,'%Y-%m-%d %H:%i:%s' ) AS "adjustDateStr",
+            a.ADJUST_TYPE,
+            a.ADJUST_POWER,
+            d.START_TIME AS "adjustStartStr",
+            d.END_TIME AS "adjustEndStr",
+            c.NAME AS "areaName",
+            a.ADJUST_DATE,
+            d.SORT
+        FROM
+            JS_AS_TRADESEQ a
+            LEFT JOIN JS_AS_TRADESEQ_CONS b ON a.GUID = b.TRADESEQ_ID
+            LEFT JOIN JS_AS_AREA c ON a.AREA_IDS = c.ID
+            LEFT JOIN JS_AS_TIME_SEGMENT d ON a.TIMESEG_ID=d.ID
+        WHERE
+            b.PARTICIPANT_ID = #{pId}
+            AND date_format(a.ADJUST_DATE,'%Y-%m')=#{month}
+            AND a.STATUS='1') mm
+        GROUP BY
+            mm.SEQ_NAME,
+            mm.adjustDateStr,
+            mm.ADJUST_TYPE,
+            mm.ADJUST_POWER,
+            mm.adjustStartStr,
+            mm.adjustEndStr,
+            mm.areaName,
+            mm.ADJUST_DATE,
+            mm.SORT
+        ORDER BY
+            mm.ADJUST_DATE,
+            mm.SORT ASC
+    </select>
+
+    <select id="getSeqCount" resultType="decimal">
+        SELECT
+            count(*)
+        FROM
+            JS_AS_TRADESEQ a
+            LEFT JOIN JS_AS_TRADESEQ_CONS b ON a.GUID = b.TRADESEQ_ID
+        WHERE
+            b.PARTICIPANT_ID = #{pId}
+            AND a.STATUS='1'
+            AND date_format( a.ADJUST_DATE,'%Y-%m-%d' ) =#{date}
+    </select>
+
+    <select id="getSeqHasCount" resultType="decimal">
+        SELECT
+            count(*)
+        FROM
+            JS_AS_TRADESEQ a
+            LEFT JOIN JS_AS_TRADE_BID_CONS b ON a.GUID = b.TRADESEQ_ID
+        WHERE
+            b.PID = #{pId}
+            AND b.STATUS='01'
+            AND a.STATUS='1'
+            AND date_format( a.ADJUST_DATE,'%Y-%m-%d' ) =#{date}
+    </select>
+
+    <select id="timeSeg" resultType="map">
+        SELECT NAME,`INTERVAL` FROM JS_AS_TIME_SEGMENT ORDER BY SORT
+    </select>
+
+    <select id="getSeqByDate" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsTradeseq">
+        SELECT
+            a.SEQ_NAME,
+            b.CONS_NO,
+            date_format( a.ADJUST_DATE,'%Y-%m-%d' ) AS "adjustDateStr",
+            a.ADJUST_TYPE,
+            a.ADJUST_POWER,
+            date_format( a.BID_START,'%Y-%m-%d %H:%i:%s' ) AS "bidStartStr",
+            date_format( a.BID_END,'%Y-%m-%d %H:%i:%s' ) AS "bidEndStr",
+            d.START_TIME AS "adjustStartStr",
+            d.END_TIME AS "adjustEndStr",
+            c.NAME AS "areaName",
+            b.GUID AS "tradeSeqConsId",
+--             DECODE( e.STATUS, '00', '已保存', '01', '已申报') AS "bidStatus",
+            case 	e.STATUS
+                when '00' then  '已保存'
+                when  '01' then '已申报'
+                end AS "bidStatus",
+            date_format( e.BID_DATE,'%Y-%m-%d %H:%i:%s' ) AS "bidDate"
+        FROM
+            JS_AS_TRADESEQ a
+            LEFT JOIN JS_AS_TRADESEQ_CONS b ON a.GUID = b.TRADESEQ_ID
+            LEFT JOIN JS_AS_AREA c ON a.AREA_IDS = c.ID
+            LEFT JOIN JS_AS_TIME_SEGMENT d ON a.TIMESEG_ID = d.ID
+            LEFT JOIN JS_AS_TRADE_BID_CONS e ON b.GUID = e.TRADESEQ_CONS_ID
+        WHERE
+            b.PARTICIPANT_ID = #{pId}
+            AND date_format( a.ADJUST_DATE,'%Y-%m-%d' ) = #{date}
+            AND a.STATUS='1'
+        ORDER BY
+            b.CONS_NO,
+            d.SORT
+    </select>
+
+    <select id="getPower96" resultType="map">
+        SELECT
+            *
+        FROM
+            JS_AS_TRADE_BID
+        WHERE
+            CONS_NO = #{consNo}
+            AND PID = #{pId}
+            AND date_format( BID_DATE,'%Y-%m-%d' ) = #{date}
+    </select>
+
+    <select id="getActualBefore" resultType="map">
+        SELECT
+            e.*
+        FROM
+            JS_AS_DAY_POWER e
+        WHERE
+            e.cons_no = #{consNo}
+            AND date_format(e.RECORD_TIME,'%Y-%m-%d')=#{date}
+    </select>
+
+    <select id="getSeqTime" resultType="map">
+        SELECT
+            *
+        FROM
+            JS_AS_TIME_SEGMENT a
+            LEFT JOIN (
+            SELECT
+                a.TIMESEG_ID
+            FROM
+                JS_AS_TRADESEQ a,
+                JS_AS_TRADESEQ_CONS b
+            WHERE
+                a.GUID = b.TRADESEQ_ID
+                AND b.CONS_NO = #{consNo}
+                AND date_format( a.ADJUST_DATE,'%Y-%m-%d' ) = #{date}
+            GROUP BY
+            a.TIMESEG_ID
+            ) c ON a.ID = c.TIMESEG_ID
+    </select>
+
+    <select id="getBasePower" resultType="map">
+        SELECT
+            c.BASE_POWER,
+            d.START_TIME,
+            d.END_TIME,
+            d.INTERVAL,
+            d.ID
+        FROM
+            JS_AS_TIME_SEGMENT d
+            LEFT JOIN (
+            SELECT
+                BASE_POWER,
+                TIMESEG_ID
+            FROM
+                JS_AS_BASELINE
+            WHERE
+                CONS_NO = #{consNo}
+                AND TRADESEQ_ID IN (
+                SELECT
+                    a.GUID
+                FROM
+                    JS_AS_TRADESEQ a
+                    LEFT JOIN JS_AS_TRADESEQ_CONS b ON a.GUID = b.TRADESEQ_ID
+                WHERE
+                    b.CONS_NO = #{consNo}
+                    AND date_format( a.ADJUST_DATE,'%Y-%m-%d' ) = #{date}
+                )) c ON d.ID = c.TIMESEG_ID
+        GROUP BY
+            c.BASE_POWER,
+            d.START_TIME,
+            d.END_TIME,
+            d.INTERVAL,
+            d.ID
+        ORDER BY
+            d.ID +0
+    </select>
+
+    <select id="getMaxPower" resultType="map">
+        SELECT
+            ifnull(MAX(POINT1),0) AS P1,
+            ifnull(MAX(POINT2),0) AS P2,
+            ifnull(MAX(POINT3),0) AS P3,
+            ifnull(MAX(POINT4),0) AS P4,
+            ifnull(MAX(POINT5),0) AS P5,
+            ifnull(MAX(POINT6),0) AS P6,
+            ifnull(MAX(POINT7),0) AS P7,
+            ifnull(MAX(POINT8),0) AS P8,
+            ifnull(MAX(POINT9),0) AS P9,
+            ifnull(MAX(POINT10),0) AS P10,
+            ifnull(MAX(POINT11),0) AS P11,
+            ifnull(MAX(POINT12),0) AS P12,
+            ifnull(MAX(POINT13),0) AS P13,
+            ifnull(MAX(POINT14),0) AS P14,
+            ifnull(MAX(POINT15),0) AS P15,
+            ifnull(MAX(POINT16),0) AS P16,
+            ifnull(MAX(POINT17),0) AS P17,
+            ifnull(MAX(POINT18),0) AS P18,
+            ifnull(MAX(POINT19),0) AS P19,
+            ifnull(MAX(POINT20),0) AS P20,
+            ifnull(MAX(POINT21),0) AS P21,
+            ifnull(MAX(POINT22),0) AS P22,
+            ifnull(MAX(POINT23),0) AS P23,
+            ifnull(MAX(POINT24),0) AS P24,
+            ifnull(MAX(POINT25),0) AS P25,
+            ifnull(MAX(POINT26),0) AS P26,
+            ifnull(MAX(POINT27),0) AS P27,
+            ifnull(MAX(POINT28),0) AS P28,
+            ifnull(MAX(POINT29),0) AS P29,
+            ifnull(MAX(POINT30),0) AS P30,
+            ifnull(MAX(POINT31),0) AS P31,
+            ifnull(MAX(POINT32),0) AS P32,
+            ifnull(MAX(POINT33),0) AS P33,
+            ifnull(MAX(POINT34),0) AS P34,
+            ifnull(MAX(POINT35),0) AS P35,
+            ifnull(MAX(POINT36),0) AS P36,
+            ifnull(MAX(POINT37),0) AS P37,
+            ifnull(MAX(POINT38),0) AS P38,
+            ifnull(MAX(POINT39),0) AS P39,
+            ifnull(MAX(POINT40),0) AS P40,
+            ifnull(MAX(POINT41),0) AS P41,
+            ifnull(MAX(POINT42),0) AS P42,
+            ifnull(MAX(POINT43),0) AS P43,
+            ifnull(MAX(POINT44),0) AS P44,
+            ifnull(MAX(POINT45),0) AS P45,
+            ifnull(MAX(POINT46),0) AS P46,
+            ifnull(MAX(POINT47),0) AS P47,
+            ifnull(MAX(POINT48),0) AS P48,
+            ifnull(MAX(POINT49),0) AS P49,
+            ifnull(MAX(POINT50),0) AS P50,
+            ifnull(MAX(POINT51),0) AS P51,
+            ifnull(MAX(POINT52),0) AS P52,
+            ifnull(MAX(POINT53),0) AS P53,
+            ifnull(MAX(POINT54),0) AS P54,
+            ifnull(MAX(POINT55),0) AS P55,
+            ifnull(MAX(POINT56),0) AS P56,
+            ifnull(MAX(POINT57),0) AS P57,
+            ifnull(MAX(POINT58),0) AS P58,
+            ifnull(MAX(POINT59),0) AS P59,
+            ifnull(MAX(POINT60),0) AS P60,
+            ifnull(MAX(POINT61),0) AS P61,
+            ifnull(MAX(POINT62),0) AS P62,
+            ifnull(MAX(POINT63),0) AS P63,
+            ifnull(MAX(POINT64),0) AS P64,
+            ifnull(MAX(POINT65),0) AS P65,
+            ifnull(MAX(POINT66),0) AS P66,
+            ifnull(MAX(POINT67),0) AS P67,
+            ifnull(MAX(POINT68),0) AS P68,
+            ifnull(MAX(POINT69),0) AS P69,
+            ifnull(MAX(POINT70),0) AS P70,
+            ifnull(MAX(POINT71),0) AS P71,
+            ifnull(MAX(POINT72),0) AS P72,
+            ifnull(MAX(POINT73),0) AS P73,
+            ifnull(MAX(POINT74),0) AS P74,
+            ifnull(MAX(POINT75),0) AS P75,
+            ifnull(MAX(POINT76),0) AS P76,
+            ifnull(MAX(POINT77),0) AS P77,
+            ifnull(MAX(POINT78),0) AS P78,
+            ifnull(MAX(POINT79),0) AS P79,
+            ifnull(MAX(POINT80),0) AS P80,
+            ifnull(MAX(POINT81),0) AS P81,
+            ifnull(MAX(POINT82),0) AS P82,
+            ifnull(MAX(POINT83),0) AS P83,
+            ifnull(MAX(POINT84),0) AS P84,
+            ifnull(MAX(POINT85),0) AS P85,
+            ifnull(MAX(POINT86),0) AS P86,
+            ifnull(MAX(POINT87),0) AS P87,
+            ifnull(MAX(POINT88),0) AS P88,
+            ifnull(MAX(POINT89),0) AS P89,
+            ifnull(MAX(POINT90),0) AS P90,
+            ifnull(MAX(POINT91),0) AS P91,
+            ifnull(MAX(POINT92),0) AS P92,
+            ifnull(MAX(POINT93),0) AS P93,
+            ifnull(MAX(POINT94),0) AS P94,
+            ifnull(MAX(POINT95),0) AS P95,
+            ifnull(MAX(POINT96),0) AS P96
+        FROM
+            JS_AS_DAY_POWER
+        WHERE
+            RECORD_TIME >= STR_TO_DATE(date_format(now(),'%Y-%m-%d'),'%Y-%m-%d')-30
+            AND CONS_NO = #{consNo}
+    </select>
+
+    <select id="getBasePowerDetail" resultType="map">
+        SELECT
+            c.*
+        FROM
+            JS_AS_BASELINEDETAIL c
+        WHERE
+            c.CONS_NO = #{consNo}
+            AND c.TRADESEQ_ID IN (
+            SELECT
+                a.GUID
+            FROM
+                JS_AS_TRADESEQ a
+                LEFT JOIN JS_AS_TRADESEQ_CONS b ON a.GUID = b.TRADESEQ_ID
+            WHERE
+                b.CONS_NO = #{consNo}
+                AND date_format( a.ADJUST_DATE,'%Y-%m-%d' ) = #{date}
+            )
+    </select>
+
+    <delete id="deleteDayPowers">
+        DELETE
+        FROM
+            JS_AS_TRADE_BID
+        WHERE
+            date_format( BID_DATE,'%Y-%m-%d' )=#{date}
+            AND PID =#{pId}
+            AND CONS_NO =#{consNo}
+    </delete>
+
+
+    <insert id="addDayPowers">
+        INSERT INTO JS_AS_TRADE_BID(GUID,BID_DATE,PID,CONS_NO,STATUS,POINT1,POINT2,POINT3,POINT4,POINT5,POINT6,POINT7,POINT8,POINT9,POINT10,POINT11,POINT12,POINT13,POINT14,POINT15,POINT16,POINT17,POINT18,POINT19,POINT20,POINT21,POINT22,POINT23,POINT24,POINT25,POINT26,POINT27,POINT28,POINT29,POINT30,POINT31,POINT32,POINT33,POINT34,POINT35,POINT36,POINT37,POINT38,POINT39,POINT40,POINT41,POINT42,POINT43,POINT44,POINT45,POINT46,POINT47,POINT48,POINT49,POINT50,POINT51,POINT52,POINT53,POINT54,POINT55,POINT56,POINT57,POINT58,POINT59,POINT60,POINT61,POINT62,POINT63,POINT64,POINT65,POINT66,POINT67,POINT68,POINT69,POINT70,POINT71,POINT72,POINT73,POINT74,POINT75,POINT76,POINT77,POINT78,POINT79,POINT80,POINT81,POINT82,POINT83,POINT84,POINT85,POINT86,POINT87,POINT88,POINT89,POINT90,POINT91,POINT92,POINT93,POINT94,POINT95,POINT96) VALUES
+        (
+        REPLACE(UUID(),"-",""),STR_TO_DATE( #{jsAsDayPower.date},'%Y-%m-%d %H:%i:%s' ),#{jsAsDayPower.pId},#{jsAsDayPower.consNo},#{jsAsDayPower.status}
+        <foreach collection="powers" item="pc">
+            ,#{pc}
+        </foreach>
+
+        )
+    </insert>
+
+    <select id="checkTime" resultType="boolean">
+        SELECT
+        COUNT(1)
+        FROM
+        JS_AS_TRADESEQ a,JS_AS_TRADESEQ_CONS b
+        WHERE
+        a.GUID=b.TRADESEQ_ID AND
+        a.BID_START &lt; now() AND a.BID_END &gt; now()
+        AND b.GUID=#{tradeSeqConsId}
+    </select>
+    <select id="hasDayPowers" resultType="string">
+        SELECT
+            a.STATUS
+        FROM
+            JS_AS_TRADE_BID a,
+            (
+            SELECT
+                date_format( a.ADJUST_DATE,'%Y-%m-%d' ) AS ADJUST_DATE,
+                b.CONS_NO
+            FROM
+                JS_AS_TRADESEQ a,
+                JS_AS_TRADESEQ_CONS b
+            WHERE
+                a.GUID = b.TRADESEQ_ID
+                AND b.GUID = #{tradeSeqConsId}
+            ) d
+        WHERE
+            date_format( a.BID_DATE,'%Y-%m-%d' ) = d.ADJUST_DATE
+            AND a.CONS_NO = d.CONS_NO
+    </select>
+
+    <select id="getAdjustDate" resultType="map">
+      SELECT
+        date_format( a.ADJUST_DATE,'%Y-%m-%d' ) AS "adjustdate",
+        b.CONS_NO AS "consNo"
+    FROM
+        JS_AS_TRADESEQ a,
+        JS_AS_TRADESEQ_CONS b
+    WHERE
+        a.GUID = b.TRADESEQ_ID
+        AND b.guid = #{tradeSeqConsId}
+    </select>
+
+    <select id="getTradeBidCons" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsTradeBidCons">
+        SELECT
+            b.GUID AS "tradeseqConsId",
+            b.CONS_NO,
+            b.PARTICIPANT_ID AS PID,
+            date_format(a.ADJUST_DATE,'%Y-%m-%d') AS ADJUST_DATE,
+            date_format(a.BID_END,'%Y-%m-%d %H:%i:%s') AS BID_END,
+            a.ADJUST_TYPE,
+            a.ADJUST_POWER,
+            a.SEQ_NAME AS "tradeContent",
+            a.TIMESEG_ID,
+            a.EPRICE_UPLIMIT,
+            a.EPRICE_DOWNLIMIT,
+            a.E_KCOF,
+            d.START_TIME,
+            d.END_TIME,
+            d.INTERVAL,
+            c.GUID AS "gbsId",
+            c.BID_POWER,
+            c.BID_PRICE,
+            c.STATUS,
+            e.NAME AS "areaName"
+        FROM
+            JS_AS_TRADESEQ a
+            LEFT JOIN JS_AS_AREA e ON a.AREA_IDS=e.ID
+            LEFT JOIN JS_AS_TRADESEQ_CONS b ON a.GUID=b.TRADESEQ_ID
+            LEFT JOIN JS_AS_TIME_SEGMENT d ON a.TIMESEG_ID=d.ID
+            LEFT JOIN JS_AS_TRADE_BID_CONS c ON b.GUID = c.TRADESEQ_CONS_ID
+        WHERE a.STATUS='1' AND date_format(a.ADJUST_DATE,'%Y-%m-%d')=#{adjustdate} AND b.CONS_NO=#{consNo}
+        ORDER BY a.TIMESEG_ID+0
+    </select>
+
+    <select id="getBasePowerByTraid" resultType="decimal">
+        SELECT
+            BASE_POWER
+        FROM
+            JS_AS_BASELINE a,
+            JS_AS_TRADESEQ_CONS b
+        WHERE
+            a.TRADESEQ_ID = b.TRADESEQ_ID
+            AND a.CONS_NO = b.CONS_NO
+            AND b.GUID = #{tradeSeqConsId}
+    </select>
+
+    <insert id="insertTradeBidCons" parameterType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsTradeBidCons">
+        INSERT INTO JS_AS_TRADE_BID_CONS (GUID, TRADESEQ_CONS_ID, CONS_NO, PID, BID_DATE, BID_POWER, BID_PRICE,STATUS, TRADESEQ_ID )
+        VALUES
+        (#{gbsId},#{tradeseqConsId},(SELECT CONS_NO FROM JS_AS_TRADESEQ_CONS WHERE GUID=#{tradeseqConsId}),#{pid},STR_TO_DATE(#{bidDate},'%Y-%m-%d %H:%i:%s'),#{bidPower},#{bidPrice},#{status},(SELECT TRADESEQ_ID FROM JS_AS_TRADESEQ_CONS WHERE GUID=#{tradeseqConsId}))
+    </insert>
+
+    <update id="updateTradeBidCons" parameterType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.JsAsTradeBidCons">
+        UPDATE JS_AS_TRADE_BID_CONS
+        <set>
+            <if test="bidPower!=null and bidPower!=''">
+                BID_POWER = #{bidPower},
+            </if>
+            <if test="bidPrice!=null and bidPrice!=''">
+                BID_PRICE = #{bidPrice},
+            </if>
+            <if test="status!=null and status!=''">
+                STATUS = #{status},
+            </if>
+            <if test="bidPrice!=null and bidPrice!=''">
+                BID_DATE = STR_TO_DATE(#{bidDate},'%Y-%m-%d %H:%i:%s'),
+            </if>
+        </set>
+        WHERE
+            GUID = #{gbsId}
+    </update>
+</mapper>

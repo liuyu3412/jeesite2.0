@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryTrade.cureLine.JsAsCureLineDao">
+
+    <insert id="insertInfo" parameterType="JsAsCurveTemplateInfo">
+
+        INSERT INTO JS_AS_CURVE_TEMPLATE_INFO(
+          ID,
+          PARTICIPAN_ID,
+          CURVE_NAME,
+          COMMONALITY_CURVE_FLAG,
+          CREATE_TIME,
+          DESCRIPTION
+        ) values (
+          #{id},
+          #{participanId},
+          #{curveName},
+          0,
+          now(),
+          #{description}
+        )
+
+
+    </insert>
+
+    <insert id="insertCureveDetils" parameterType="JsAsCurvePowerPriceInfo">
+      INSERT INTO JS_AS_CURVE_POWER_PRICE_INFO(
+        ID,
+        CURVE_TEMPLATE_ID,
+        TIME_DETAIL_ID,
+        TRADE_POWER,
+        TRADE_PRICE
+      ) values (
+        #{id},
+        #{curveTemplateId},
+        #{timeDetailId},
+        #{tradePower},
+        #{tradePrice}
+      )
+    </insert>
+
+    <select id="getCurveInfoListByPid" resultType="JsAsCurveTemplateInfo">
+
+        select * from JS_AS_CURVE_TEMPLATE_INFO where PARTICIPAN_ID = #{pid} order by CREATE_TIME desc
+
+    </select>
+
+    <select id="getCurveDetils" resultType="JsAsCurvePowerPriceInfo">
+
+        SELECT
+            *
+        FROM
+            JS_AS_CURVE_POWER_PRICE_INFO info
+            LEFT JOIN JS_AS_TIME_DEFINITION_DETAIL detail ON info.TIME_DETAIL_ID = detail.GUID
+        WHERE
+            info.CURVE_TEMPLATE_ID = #{infoId}
+        ORDER BY
+            detail.TIME asc
+
+    </select>
+
+    <select id="findTimeDefinitionDetailByTimeId" resultType="JsAsTimeDefinitionDetail">
+
+        select detail.* from JS_AS_TIME_DEFINITION_DETAIL detail where detail.TIME_ID = #{timeId} order by detail.TIME
+
+    </select>
+
+    <select id="findInfoById" resultType="JsAsCurveTemplateInfo">
+
+        select * from JS_AS_CURVE_TEMPLATE_INFO where ID = #{id} order by CREATE_TIME desc
+
+    </select>
+
+    <select id="updateInfo" parameterType="JsAsCurveTemplateInfo">
+
+        UPDATE
+          JS_AS_CURVE_TEMPLATE_INFO info
+        SET
+          info.CURVE_NAME = #{curveName},
+          info.DESCRIPTION = #{description}
+        where
+          info.ID = #{id}
+
+
+    </select>
+
+
+    <select id="updateDetail" parameterType="JsAsCurvePowerPriceInfo">
+
+        UPDATE
+          JS_AS_CURVE_POWER_PRICE_INFO info
+        SET
+          info.TRADE_POWER = #{tradePower},
+          info.TRADE_PRICE = #{tradePrice}
+        where
+          info.CURVE_TEMPLATE_ID = #{curveTemplateId}
+          and info.TIME_DETAIL_ID = #{timeDetailId}
+
+
+    </select>
+
+    <delete id="delInfo">
+
+        delete from JS_AS_CURVE_TEMPLATE_INFO info where ID = #{id}
+
+    </delete>
+    
+    <delete id="delDetails">
+
+        delete from JS_AS_CURVE_POWER_PRICE_INFO info where CURVE_TEMPLATE_ID = #{curveTemplateId}
+
+    </delete>
+    
+</mapper>

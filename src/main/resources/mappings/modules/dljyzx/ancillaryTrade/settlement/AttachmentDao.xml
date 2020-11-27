@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryTrade.settlement.AttachmentDao">
+
+	<insert id="insertFile" parameterType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.Attachment" >
+		insert into T_MX_ATTACHMENT
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="attachmentId != null" >
+				ATTACHMENT_ID,
+			</if>
+			<if test="updateFiletableName != null" >
+				TABLE_NAME,
+			</if>
+			<if test="pkVal != null" >
+				PK_VAL,
+			</if>
+			<if test="attFile != null" >
+				ATT_FILE,
+			</if>
+			<if test="attName != null" >
+				ATT_NAME,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="attachmentId != null" >
+				#{attachmentId,jdbcType=VARCHAR},
+			</if>
+			<if test="tableName != null" >
+				#{tableName,jdbcType=VARCHAR},
+			</if>
+			<if test="pkVal != null" >
+				#{pkVal,jdbcType=VARCHAR},
+			</if>
+			<if test="attFile != null" >
+				#{attFile,jdbcType=BLOB},
+			</if>
+			<if test="attName != null" >
+				#{attName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+
+	<select id="queryPkVal"  resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.Attachment">
+		select  TABLE_NAME  AS  "tableName" , PK_VAL  as  "pkVal" from  T_MX_ATTACHMENT
+		where PK_VAL =#{pkVal}
+	</select>
+
+	<update id="updateFile">
+		update  T_MX_ATTACHMENT  set ATT_FILE  =#{attFile}
+		  where  PK_VAL =#{pkVal}
+	</update>
+	<select id="getSingle"  resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.Attachment">
+		select
+
+		a.ATTACHMENT_ID AS "attachmentId",
+		a.TABLE_NAME AS "tableName",
+		a.PK_VAL AS "pkVal",
+		a.ATT_NAME AS "attName",
+		a.ATT_PATH AS "attPath",
+		a.COL_NAME AS "colName",
+		a.ATT_SIZE AS "attSize",
+		a.ATT_FILE AS "attFile"
+
+		from  T_MX_ATTACHMENT a
+
+		where PK_VAL =#{pkVal}
+	</select>
+
+
+
+	<select id="getReportPdf"  resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.Attachment">
+		select
+
+		a.ATTACHMENT_ID AS "attachmentId",
+		a.TABLE_NAME AS "tableName",
+		a.PK_VAL AS "pkVal",
+		a.ATT_NAME AS "attName",
+		a.ATT_PATH AS "attPath",
+		a.COL_NAME AS "colName",
+		a.ATT_SIZE AS "attSize",
+		a.ATT_FILE AS "attFile"
+		from  T_MX_ATTACHMENT a
+		where ATTACHMENT_ID =#{guId}
+	</select>
+    <select id="getReportPdfDaily"  resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.Attachment">
+		select
+
+		a.ATTACHMENT_ID AS "attachmentId",
+		a.TABLE_NAME AS "tableName",
+		a.PK_VAL AS "pkVal",
+		a.ATT_NAME AS "attName",
+		a.ATT_PATH AS "attPath",
+		a.COL_NAME AS "colName",
+		a.ATT_SIZE AS "attSize",
+		a.ATT_FILE AS "attFile"
+		from  T_MX_ATTACHMENT a
+
+		where PK_VAL =#{guId}
+	</select>
+
+	<update id="updateMx">
+			 UPDATE t_mx_attachment SET
+			table_name = #{tableName},
+			att_name = #{attName},
+			att_size = #{attSize},
+			att_file=#{attFile,jdbcType=BLOB}
+		WHERE ATTACHMENT_ID = #{attachmentId}
+	</update>
+	<update id="updateMxDaily">
+			 UPDATE t_mx_attachment SET
+			table_name = #{tableName},
+			att_name = #{attName},
+			att_size = #{attSize},
+			att_file=#{attFile,jdbcType=BLOB}
+		WHERE PK_VAL = #{pkVal}
+	</update>
+
+</mapper>

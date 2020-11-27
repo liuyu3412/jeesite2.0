@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.tmxattachmentw.dao.TMxAttachmentDao">
+    
+	<sql id="tMxAttachmentColumns">
+		a.attachment_id AS "attachmentId",
+		a.table_name AS "tableName",
+		a.pk_val AS "pkVal",
+		a.att_name AS "attName",
+		a.att_path AS "attPath",
+		a.col_name AS "colName",
+		a.att_size AS "attSize",
+		a.att_file AS "attFile"
+	</sql>
+	
+	<sql id="tMxAttachmentJoins">
+	</sql>
+    
+    
+    
+	<select id="get" resultType="TMxAttachment">
+		SELECT 
+			<include refid="tMxAttachmentColumns"/>
+		FROM t_mx_attachment a
+		<include refid="tMxAttachmentJoins"/>
+		WHERE a.attachment_id = #{pk_val}
+	</select>
+	
+	<select id="getAtt" resultType="TMxAttachment">
+		SELECT 
+			<include refid="tMxAttachmentColumns"/>
+		FROM t_mx_attachment a
+		<include refid="tMxAttachmentJoins"/>
+		WHERE a.attachment_id = #{attachmentId}
+	</select>
+	
+	<select id="getSingle" resultType="TMxAttachment">
+		SELECT 
+			<include refid="tMxAttachmentColumns"/>
+		FROM t_mx_attachment a
+		<include refid="tMxAttachmentJoins"/>
+		WHERE a.pk_val = #{pkVal}
+	</select>
+	
+	<select id="findList" resultType="TMxAttachment">
+		SELECT 
+			<include refid="tMxAttachmentColumns"/>
+		FROM t_mx_attachment a
+		<include refid="tMxAttachmentJoins"/>
+		<where>
+			
+			<if test="attachmentId != null and attachmentId != ''">
+				AND a.attachment_id = #{attachmentId}
+			</if>
+			<if test="tableName != null and tableName != ''">
+				AND a.table_name = #{tableName}
+			</if>
+			<if test="pkVal != null and pkVal != ''">
+				AND a.pk_val = #{pkVal}
+			</if>
+			<if test="attName != null and attName != ''">
+				AND a.att_name = #{attName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TMxAttachment">
+		SELECT 
+			<include refid="tMxAttachmentColumns"/>
+		FROM t_mx_attachment a
+		<include refid="tMxAttachmentJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getContract" resultType="com.thinkgem.jeesite.modules.tmxattachmentw.entity.TMxAttachment">
+		select
+			<include refid="tMxAttachmentColumns"/>
+		from JS_CONFIRM_MES cm, js_reg_relation_new rrn, t_mx_attachment a
+		where cm.guid = #{tablePk}
+		and rrn.guid = cm.TABLE_PK
+		and a.ATTACHMENT_ID = rrn.CONTRACT_FILE
+	</select>
+
+    <select id="downloadAfterPublicity"
+            resultType="com.thinkgem.jeesite.modules.tmxattachmentw.entity.TMxAttachment">
+        select
+        <include refid="tMxAttachmentColumns"/>
+        from  t_mx_attachment a
+        where a.ATTACHMENT_ID = #{attachmentId}
+    </select>
+
+    <insert id="insert">
+		INSERT INTO t_mx_attachment(
+			attachment_id,
+			table_name,
+			pk_val,
+			att_name,
+			att_path,
+			col_name,
+			att_size,
+			att_file
+		) VALUES (
+			#{attachmentId},
+			#{tableName},
+			#{pkVal},
+			#{attName},
+			#{attPath},
+			#{colName},
+			#{attSize},
+			#{attFile,jdbcType=BLOB}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_mx_attachment SET 	
+			table_name = #{tableName},
+			att_name = #{attName},
+			att_path = #{attPath},
+			col_name = #{colName},
+			att_size = #{attSize},
+			att_file=#{attFile,jdbcType=BLOB}
+		WHERE pk_val = #{pkVal}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM t_mx_attachment
+		WHERE pk_val = #{pkVal}
+	</delete>
+
+	<delete id="deleteByAttachmentId">
+		DELETE FROM t_mx_attachment
+		WHERE ATTACHMENT_ID = #{attachmentId}
+	</delete>
+
+
+</mapper>

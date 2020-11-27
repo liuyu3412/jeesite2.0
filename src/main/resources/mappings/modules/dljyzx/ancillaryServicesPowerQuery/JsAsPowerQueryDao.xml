@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryServicesPowerQuery.JsAsPowerQueryDao">
+
+
+    <!--
+    SELECT *
+
+  FROM (SELECT ROWNUM AS rowno, t.*
+
+          FROM emp t
+
+         WHERE hire_date BETWEEN STR_TO_DATE ('20060501', 'yyyymmdd')
+
+                             AND STR_TO_DATE ('20060731', 'yyyymmdd')
+
+           AND ROWNUM <= 20) table_alias
+
+ WHERE table_alias.rowno >= 10;-->
+
+
+
+
+    <select id="findList" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryServicesPowerQuery.JsAsPowerQuery">
+        select
+        distinct  c.cons_no consno
+        from JS_AS_CLEARING     c,
+        JS_AS_MARKETAPPLY  m,
+        JS_AS_MARKETAPPLY_CONSNO  mc,
+        JS_AS_TRADESEQ     t,
+        JS_AS_TIME_SEGMENT ts
+      where
+            m.PARTICIPANT_ID = #{participantId}
+            and c.cons_no = mc.cons_no
+            and m.GUID = mc.MARKETAPPLY_ID
+            and c.TRADESEQ_ID = t.GUID
+            and t.TIMESEG_ID = ts.id
+            and date_format(t.ADJUST_DATE,'%Y-%m-%d') = #{date}
+
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findSeqsByMonth" resultType="String">
+            select date_format(t.ADJUST_DATE,'%Y-%m-%d') ADJUSTDATE
+              from JS_AS_TRADESEQ_CONS tc, JS_AS_TRADESEQ t, JS_AS_CLEARING c
+              where t.GUID = tc.TRADESEQ_ID
+                and tc.PARTICIPANT_ID = #{pId}
+                and t.STATUS = '1'
+                and tc.CONS_NO = c.CONS_NO
+                and tc.TRADESEQ_ID = c.TRADESEQ_ID
+                and c.CLEARING_STATE = '1'
+                and date_format(t.ADJUST_DATE,'%Y-%m') = #{month}
+                group by ADJUST_DATE
+    </select>
+
+    <select id="powereQuery" resultType="map" >
+        select c.cons_no     consno,
+               ts.interval,
+               ts.start_time,
+               date_format(t.ADJUST_DATE,'%Y-%m-%d') ADJUSTDATE,
+               c.TRADESEQ_ID TRADESEQID
+          from JS_AS_CLEARING     c,
+               JS_AS_MARKETAPPLY  m,
+               JS_AS_MARKETAPPLY_CONSNO  mc,
+               JS_AS_TRADESEQ     t,
+               JS_AS_TIME_SEGMENT ts
+         where m.PARTICIPANT_ID = #{participantId}
+           and c.cons_no = mc.cons_no
+           and m.GUID = mc.MARKETAPPLY_ID
+           and c.TRADESEQ_ID = t.GUID
+           and t.TIMESEG_ID = ts.id
+           and date_format(t.ADJUST_DATE,'%Y-%m-%d') = #{date}
+    </select>
+    <select id="queryConso" resultType="String" >
+        select
+            distinct  c.cons_no cons_no
+          from JS_AS_CLEARING     c,
+               JS_AS_MARKETAPPLY  m,
+               JS_AS_MARKETAPPLY_CONSNO  mc,
+               JS_AS_TRADESEQ     t,
+               JS_AS_TIME_SEGMENT ts
+         where m.PARTICIPANT_ID = #{participantId}
+           and c.cons_no = mc.cons_no
+           and m.GUID = mc.MARKETAPPLY_ID
+           and c.TRADESEQ_ID = t.GUID
+           and t.TIMESEG_ID = ts.id
+           and date_format(t.ADJUST_DATE,'%Y-%m-%d') = #{date}
+    </select>
+
+
+
+    <select id="queryActulePower" resultType="map">
+        select * from JS_AS_DAY_POWER dp, JS_AS_TRADESEQ t where CONS_NO = #{consno}
+
+        and dp.RECORD_TIME = t.ADJUST_DATE
+    </select>
+
+
+    <select id ="querylastPower" resultType="map">
+         SELECT * FROM JS_AS_DAY_ENERGY
+         where date_format(RECORD_TIME,'%Y-%m-%d') = #{dayTime}
+         and   CONS_NO =#{consno}
+    </select>
+
+    <select id="queryBaseline" resultType="map">
+    select * from (
+        select b.BASE_POWER,b.TIMESEG_ID
+          from JS_AS_BASELINE b,JS_AS_TRADESEQ t
+         where b.cons_no = #{consno}
+          and  b.TRADESEQ_ID = t.GUID
+           and date_format(t.ADJUST_DATE,'%Y-%m-%d') = #{adjustDate}
+           ) where rownum = 1
+    </select>
+
+    <select id="queryTradeBid" resultType="map">
+        select * from JS_AS_TRADE_BID
+          where cons_no = #{consno}
+        and date_format(BID_DATE,'%Y-%m-%d') = #{adjustDate}
+    </select>
+
+    <select id="queryActualElec" resultType="map">
+      select * from JS_AS_DAY_POWER
+        where cons_no = #{consno}
+       and date_format(RECORD_TIME,'%Y-%m-%d') = #{adjustDate}
+    </select>
+
+</mapper>

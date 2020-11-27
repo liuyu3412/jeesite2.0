@@ -1,0 +1,343 @@
+body {margin:0;padding:0;}
+/********申报数据查询*****交易结果查询***************/
+.all{
+	margin:0;
+	padding:0;
+	width:800px;
+	margin-left: 20px;
+}
+/******页面提示区域样式******/
+.biaoti{
+	margin-top: 15px;
+	height: 40px;
+}
+.biaoti h3{
+	font-size:16px ;
+	font-family: 黑体;
+	color:#006f6b;
+	height:30px;
+	line-height:30px;
+}
+/*查询区域样式*/
+.chaxun{
+	margin-left: 70px;
+}
+/*针对页面查询区域按钮比较多的情况*/
+.wc_div{
+	 width: 790px ;
+	 height: 70px;
+	 margin-left: 10px;
+}
+.nc_div{
+	width: 790px ;
+	height: 35px;
+	line-height: 35px;
+	font-size: 14px;
+}
+
+.td_input input:not([type]),.td_input input:not([type="text"]) {
+	height: 24px;
+	border: 1px solid #c5dddd;
+}
+/*针对页面查询区域按钮比较多的情况结束*/
+
+.chaxun table tr  td{
+	font-size:12px;
+	font-family:宋体;
+}
+.chaxun span{
+	font-size:12px;
+	font-family:宋体;
+}
+select{
+	width: 163px; 
+	height: 27px; 
+	margin-left: 20px;
+	line-height: 27px;
+	/* border-color:#c5dddd;  */
+}
+.easyui-textbox{
+	height: 20px; 
+	width: 163px;
+	border-color:#c5dddd;
+}
+.chaxun form{
+}
+.panel-title{
+	color: #006f6b;
+}
+.input {
+	height: 25px;
+	border: solid 1px #C5DDDD;
+	line-height: 25px;
+}
+/*****表格数据区域样式******/
+.datagridbody{
+	width: 798px;
+	margin-top: 10px;
+	border-top: 2px solid #006f6b;
+	border-bottom: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+	border-right: 1px solid #dfdfdf;
+}
+
+.operatorFile {
+	
+}
+
+.datagridbody1{
+	float: left;
+	margin-left: 20px;
+	border-bottom: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+	border-right: 1px solid #dfdfdf;
+	margin-top: 10px;
+}
+.datagrid-header{
+	float: left;
+}
+.datagrid-header-row{
+	height: 25px;
+}
+.datagrid-header{
+	border-bottom: solid 1px #dfdfdf; 
+	background:  #f2fbfa; 
+}
+.datagrid-body td{
+	/* border-right: 0px;
+	border-bottom: 0px;  */
+}
+.datagrid-header-inner{
+	background: #f2fbfa; 
+}
+.datagrid-header td{
+	border-right-color: #f2fbfa;
+}
+/*.datagrid-header td.datagrid-header-over{
+	background:#f2fbfa;
+	/*border: solid 1px #dfdfdf;
+}*/
+.panel-body{
+	border:0px;
+}
+.panel-header{
+	border-left: 0px;
+	border-right: 0px;
+	background: #f2fbfa;
+	border-bottom-color: #dfdfdf;
+	border-top-color: #dfdfdf;
+}
+.datagrid-row{
+	height: 30px;
+	line-height: 30px;
+	width: 100%;
+}
+.datagrid-row td{
+	height: 30px;
+	overflow: hidden;
+}
+.datagrid-row td div{
+	line-height: 30px;
+}
+.datagrid-body{
+	float:left;
+	/* margin-top: 20px; */
+	margin-bottom:10px;
+	height: auto;
+	overflow: auto;/*datagrid的列过多时出现滚动条*/
+}
+.datagrid-td-rownumber{
+	/* background: #ffffff; 表格统计数字的背景色*/
+	float: left;
+	margin-top: 0px;
+	height:30px;
+}
+.danwei{
+	border-top: 2px solid #006e6b;
+	float: right;
+	margin-right: 35px;
+}
+.danwei  font{
+	font-size: 16px;
+	font-family: 宋体;
+	font-weight: bold;
+	float: right;
+	margin-right: 5px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.datagrid-cell-c1-action a{
+	text-decoration: none;
+	color:#333333;
+}
+.datagrid-cell-c1-loadName{
+	color:#006f6b;
+	cursor : pointer;
+}
+.datagridbody .datagrid-optbtn {
+	color: #006f6b;
+	text-decoration: none;
+	display: block;
+}
+.datagridbody .datagrid-optbtn:hover {
+	font-weight: bold;
+}
+.tabs-header{
+	background: #f2fbfa;
+	border-top: 2px solid #006f6b;
+	border-bottom: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+	border-right: 1px solid #dfdfdf;
+}
+.tabs-panels {
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid #dfdfdf;
+    border-top: 0px;
+    overflow: hidden;
+}
+.tabs li.tabs-selected{
+	border:1px solid #dfdfdf;
+	border-bottom:1px solid #fff;
+}
+/****分页区域样式*****/
+.pagebody table{
+	width: 798px;
+	text-align: center;
+	float: left;
+	margin-top: 10px;
+	margin-left: 20px;
+}
+
+.combo-panel {
+	border: 1px #ccc solid;
+}
+
+.combobox-item-hover {
+	color: #fff;
+	background: #0d928d;
+}
+
+.datagrid-cell-rownumber {
+	padding: 0;
+}
+.btn-primary {
+	border: 1px #168e8b solid;
+	background: #189b96;
+	border-radius: 5px;
+	display: inline-block;
+	vertical-align: middle;
+	padding: 3px 10px;
+	color: #fff;
+	font-weight: normal;
+	text-decoration: none;
+	font-family: "黑体";
+	font-size: 14px;
+	line-height: 20px;
+	cursor: pointer;
+}
+.btn-primary[disabled] {
+	background: #ccc;
+	border-color: #eee;
+}
+.push-left{
+	float:left;
+}
+.push-right {
+	float: right;
+}
+.pagebar {
+	clear: both;
+	width: 789px;
+	padding-top: 15px;
+	margin-left: 10px;
+	height: 30px;
+}
+.pagebar-text {
+	font-size: 12px;
+}
+.pagebar input.pageno {
+	width: 2em;
+}
+.pagebar-buttons a{
+	text-decoration: none;
+	padding: 5px 10px;
+	border: 1px #ccc solid;
+	margin-left: 15px;
+	font-size: 12px;
+	border-radius: 3px;
+	color: #006f6b;
+}
+
+.pagebar-buttons a.disabled {
+	color: #ccc;
+}
+
+.wapper-chart {
+	clear: both;
+	width: 760px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}
+
+.line-h {
+	clear: both;
+	height: 2px;
+	overflow: hidden;
+	margin: 25px 0;
+	background: #006f6b;
+	text-indent: -100px;
+}
+
+.chart-datagrid {
+	margin-top: 25px;
+	border-top: 2px solid #006f6b;
+	border-bottom: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+	border-right: 1px solid #dfdfdf;
+}
+
+.xxfb-nodata {
+	margin-left: 10px;
+	margin-top: 25px;
+	color: #006f6b;
+}
+
+.main-wapper {
+	width: 792px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.main-wapper .title {
+	margin: 20px 0;
+}
+
+.main-wapper .title h3 {
+	font-size: 16px;
+	font-family: 黑体;
+	color: #006f6b;
+	height: 30px;
+	line-height: 30px;
+	margin: 0;
+}
+
+.main-wapper .search {
+	padding-left: 50px;
+}
+
+.main-wapper .dgbody {
+	margin-top: 20px;
+	border-top: 2px solid #006f6b;
+	border-bottom: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+	border-right: 1px solid #dfdfdf;
+}
+.span_link{
+	cursor:pointer;
+	text-decoration:none;
+}
+.span_link:HOVER{
+	color:#006e6b;
+}

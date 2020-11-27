@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryTrade.settlement.JsAsSeResultMonthDao">
+
+	<sql id="jsAsSeResultMonthColumns">
+		a.GUID AS  "guId",
+		a.RESULT_NAME AS "resultName",
+		date_format(a.MONTH,'%Y-%m') AS "month",
+		date_format(a.RESULT_PRODUCT_DATE,'%Y-%m-%d') AS "resultProductDate",
+--
+		a.FEEDBACK AS "feedBack",
+		a.DEAL_STATUS AS "dealStatus",
+ 		case  a.ISSUE_STATUS
+		  when  '0'  then '未生成'
+		  when '1' then '已生成未发布'
+		  when '2' then '已发布'
+		 end  AS "issueStatus",
+		  case a.CONFIRM_STATUS
+		  when  '0' then '未确认'
+		  when '1' then  '已确认'
+		  when '2' then  '有异议'
+		end   as "confirmStatus",
+
+		a.PARTICIPANTID AS "participantId"
+	</sql>
+
+	<select id="findList" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.JsAsSeResultMonth">
+		select    <include refid="jsAsSeResultMonthColumns" />
+		 from JS_AS_SE_RESULT_MONTH a
+		<where>
+			a.PARTICIPANTID =#{participantId}
+
+			and  ISSUE_STATUS ='2'
+
+			<if test="month != null and  month!=''">
+				and date_format(a.MONTH,'%Y-%m')  like concat (concat ('%',#{month}),'%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getGUID"  resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.JsAsSeResultMonth">
+		select  a.GUID  as "guId"
+		from JS_AS_SE_RESULT_MONTH a
+		where
+		a.PARTICIPANTID =#{participantId}
+		<if test="month != null" >
+		and 	date_format(a.MONTH,'%Y-%m') like concat (concat ('%',#{month}),'%')
+		</if>
+	</select>
+	<update id="confirm" >
+		update  JS_AS_SE_RESULT_MONTH
+		set CONFIRM_STATUS =#{confirmStatus},FEEDBACK =#{feedBack}
+		 where
+		  GUID =#{guId}
+		  and  ISSUE_STATUS ='2'
+		   and  PARTICIPANTID=#{participantId}
+	</update>
+
+
+	<select id="getInfoByguId" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.JsAsSeResultMonth">
+		SELECT   <include refid="jsAsSeResultMonthColumns" />
+		FROM JS_AS_SE_RESULT_MONTH a
+		WHERE
+		a.PARTICIPANTID =#{participantId}
+
+		and  ISSUE_STATUS ='2'
+
+		and   a.GUID =#{guId}
+	</select>
+
+
+	<update id="updateStatus">
+		update JS_AS_SE_RESULT_MONTH set CONFIRM_STATUS =#{confirmStatus} ,FEEDBACK =#{feedBack}
+		where
+		PARTICIPANTID =#{participantId}
+		and
+		 GUID =#{guId}
+	</update>
+
+	<select id="getNumber" resultType="map">
+		SELECT COUNT(*)  as "count" FROM T_MX_ATTACHMENT where  ATTACHMENT_ID =#{guId}
+	</select>
+
+
+
+</mapper>

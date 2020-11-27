@@ -1,0 +1,127 @@
+ html,body{height:100%;width:100%;}
+ 
+.background{
+	height:100%;
+	width:100%;
+	background-image: url(../images/login2.jpg);
+	background-repeat:no-repeat;
+	background-size:cover;
+	position: relative;
+}
+
+.foot{
+	width:100%;
+	background-color: #979696;
+	color:#fff;
+	position: absolute;
+	bottom: 0;
+	padding:15px 0;
+}
+
+.foot_infor{
+	width:1366px;
+	margin:auto;
+	overflow:auto;
+}
+
+.foot_infor .us{
+	line-height: 20px;
+	font-weight: bold;
+	margin-right: 25px;
+}
+
+.foot_infor .infor_p{
+	line-height: 20px;
+	margin-right: 25px;
+}
+
+.login_k{
+	width:694px;
+	height:420px;
+	padding:0;
+	margin:5% auto 0;
+	background: rgba(235,235,235,0.8);
+	box-shadow: 3px 3px 10px #666;
+}
+
+.form{
+	text-align: center;
+}
+
+.form p{
+	width:310px;
+	margin:auto;
+}
+
+.form p input{
+	border: 1px solid white;
+	border-radius: 0px;
+	text-align: center;
+	width: 308px;
+	background: rgba(255,255,255,0);
+	height: 38px;
+	line-height: 38px;
+	padding: 0;
+	margin:10px auto 20px;
+}
+
+.form .login{
+	border:none;
+	border-radius:0px;
+	background-color:#00affd;
+	width: 144px;
+	height: 36px;
+	color:#fff;
+	line-height: 36px;
+	margin:0;
+	padding:0;
+}
+
+.form .register{
+	border:1px solid #00affd;
+	border-radius:0px;
+	color:#00affd;
+	background-color:rgba(0,0,0,0);
+	width: 142px;
+	height: 34px;
+	line-height: 34px;
+	margin:0;
+	padding:0;
+}
+
+.form .titlep span{
+	color: #0396d3;
+    display: inline-block;
+    width: 210px;
+    line-height: 36px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.form .titlep .span-one{
+	border-right: 1px solid white;
+}
+
+.form .titlep{
+	border-bottom: 1px solid #fff;
+	margin-bottom: 20px;
+	width:100%;
+}
+
+.form .button{
+	margin:20px auto 0;
+}
+
+.form .forget{
+	text-align: left;
+	margin:20px auto;
+	cursor: pointer;
+}
+
+/* .form .forget a{
+	margin-left:50px;
+} */
+ .echo{
+	 padding-bottom: 5px;
+	 padding-top: 5px;
+ }

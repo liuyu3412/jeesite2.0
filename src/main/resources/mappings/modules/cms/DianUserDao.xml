@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cms.dao.DianUserDao">
+    
+	<sql id="dianUserColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.created AS "created",
+		a.delflag AS "delflag",
+		a.linked_name AS "linkedName",
+		a.linked_phone AS "linkedPhone",
+		a.organization_code AS "organizationCode",
+		a.business_code AS "businessCode",
+		a.seq_no AS "seqNo",
+		a.statuz AS "statuz"
+	</sql>
+	
+	<sql id="dianUserJoins">
+	</sql>
+    
+	<select id="get" resultType="DianUser">
+		SELECT 
+			<include refid="dianUserColumns"/>
+		FROM dian_user a
+		<include refid="dianUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DianUser">
+		SELECT 
+			<include refid="dianUserColumns"/>
+		FROM dian_user a
+		<include refid="dianUserJoins"/>
+		<where>
+			a.delflag = 0
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="organizationCode != null and organizationCode != ''">
+				AND a.organization_code = #{organizationCode}
+			</if>
+			<if test="seqNo != null and seqNo != ''">
+				AND a.seq_no = #{seqNo}
+			</if>
+			<if test="statuz != null and statuz != ''">
+				AND a.statuz = #{statuz}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DianUser">
+		SELECT 
+			<include refid="dianUserColumns"/>
+		FROM dian_user a
+		<include refid="dianUserJoins"/>
+		<where>
+			a.delflag = 0
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="organizationCode != null and organizationCode != ''">
+				AND a.organization_code = #{organizationCode}
+			</if>
+			<if test="seqNo != null and seqNo != ''">
+				AND a.seq_no = #{seqNo}
+			</if>
+			<if test="statuz != null and statuz != ''">
+				AND a.statuz = #{statuz}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dian_user(
+			id,
+			name,
+			created,
+			delflag,
+			linked_name,
+			linked_phone,
+			organization_code,
+			business_code,
+			seq_no,
+			statuz
+		) VALUES (
+			#{id},
+			#{name},
+			#{created},
+			#{delflag},
+			#{linkedName},
+			#{linkedPhone},
+			#{organizationCode},
+			#{businessCode},
+			#{seqNo},
+			#{statuz}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dian_user SET 	
+			name = #{name},
+			created = #{created},
+			delflag = #{delflag},
+			linked_name = #{linkedName},
+			linked_phone = #{linkedPhone},
+			organization_code = #{organizationCode},
+			business_code = #{businessCode},
+			seq_no = #{seqNo},
+			statuz = #{statuz}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM dian_user
+		WHERE id = #{id}
+	</update>
+
+	<update id="upDelFlag">
+		update dian_user set delflag = 1
+		WHERE id = #{id}
+	</update>
+
+	<select id="getRepeat" parameterType="String" resultType="long">
+	SELECT
+	   count(1)
+	FROM dian_user a
+	where a.delflag = 0 and a.name=#{name}
+	</select>
+	
+</mapper>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryTrade.clear.ClearInquiryDao">
+
+
+	<sql id="clearInquiryColumns">
+		a.GUID as "guId",
+		a.PARTICIPANT_ID as "participantId",
+		a.TRADESEQ_ID AS "tradeSeqId",
+		a.CONS_NO AS "consumerNumber",
+		date_format(a.REPORT_TIME,'%Y-%m-%d') AS "reportTime",
+		date_format(a.CALLING_TIME,'%Y-%m-%d') AS "callTime",
+		date_format(a.CLEARING_DATE,'%Y-%m-%d') AS "clearDate",
+	case 	a.CLEARING_STATE
+	 when '1' then  '已中标'
+	 when  '0' then '未中标'
+	end AS "clearStatus",
+		a.CONS_NAME AS "consumerName",
+		b.BID_POWER as "bidPower",
+		b.BID_DATE as "bidDate",
+		b.BID_PRICE AS "bidPrice",
+		ba.PARTICIPANTNAME as "participantName"
+	</sql>
+
+
+	<sql id="clearInquiryJoins">
+	</sql>
+	
+	<select id="findList" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.clear.ClearResult">
+		select p.id participantId, p.caption participantName, c.id consNo, clear.area_id areaId, clear.phyunit_id phyunitId,
+			left(clear.data_time, 10) dataTime, clear.data_type dataType, clear.p1 p1, clear.p2 p2, clear.p3 p3, clear.p4 p4, clear.p5 p5, clear.p6 p6, clear.p7 p7, clear.p8 p8, clear.p9 p9, clear.p10 p10, clear.p11 p11, clear.p12 p12, clear.p13 p13, clear.p14 p14, clear.p15 p15, clear.p16 p16, clear.p17 p17, clear.p18 p18, clear.p19 p19, clear.p20 p20, clear.p21 p21, clear.p22 p22, clear.p23 p23, clear.p24 p24, clear.p25 p25, clear.p26 p26, clear.p27 p27, clear.p28 p28, clear.p29 p29, clear.p30 p30, clear.p31 p31, clear.p32 p32, clear.p33 p33, clear.p34 p34, clear.p35 p35, clear.p36 p36, clear.p37 p37, clear.p38 p38, clear.p39 p39, clear.p40 p40, clear.p41 p41, clear.p42 p42, clear.p43 p43, clear.p44 p44, clear.p45 p45, clear.p46 p46, clear.p47 p47, clear.p48 p48, clear.p49 p49, clear.p50 p50, clear.p51 p51, clear.p52 p52, clear.p53 p53, clear.p54 p54, clear.p55 p55, clear.p56 p56, clear.p57 p57, clear.p58 p58, clear.p59 p59, clear.p60 p60, clear.p61 p61, clear.p62 p62, clear.p63 p63, clear.p64 p64, clear.p65 p65, clear.p66 p66, clear.p67 p67, clear.p68 p68, clear.p69 p69, clear.p70 p70, clear.p71 p71, clear.p72 p72, clear.p73 p73, clear.p74 p74, clear.p75 p75, clear.p76 p76, clear.p77 p77, clear.p78 p78, clear.p79 p79, clear.p80 p80, clear.p81 p81, clear.p82 p82, clear.p83 p83, clear.p84 p84, clear.p85 p85, clear.p86 p86, clear.p87 p87, clear.p88 p88, clear.p89 p89, clear.p90 p90, clear.p91 p91, clear.p92 p92, clear.p93 p93, clear.p94 p94, clear.p95 p95, clear.p96 p96, left(clear.update_time, 10) updateTime
+		from mos_peak_load_cons_view c, mos_peak_load_user_view u, mos_peak_load_participant_view p, mos_peak_clear_load_pub clear
+		<where>
+				c.user_id = u.id 
+			and
+			    p.id = u.participant_id
+			and
+				clear.area_id = p.id
+			and
+				clear.data_type = 10
+			<if test="consNo != null and consNo != ''">
+				and c.id = #{consNo}
+			</if>
+			<if test="dataTime != null and dataTime != ''">
+				and left(clear.data_time, 10) = #{dataTime}
+			</if>
+		</where>
+	</select>
+
+
+	<!-- <select id="findList" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.clear.ClearInquiry">
+		select
+			a.GUID as "guId",
+			a.PARTICIPANT_ID as "participantId",
+			a.TRADESEQ_ID AS "tradeSeqId",
+			a.CONS_NO AS "consumerNumber",
+			date_format(a.REPORT_TIME,'%Y-%m-%d') AS "reportTime",
+			date_format(a.CALLING_TIME,'%Y-%m-%d') AS "callTime",
+			date_format(a.CLEARING_DATE,'%Y-%m-%d') AS "clearDate",
+			case 	a.CLEARING_STATE
+			when '1' then  '已中标'
+			when  '0' then '未中标'
+			end AS "clearStatus",
+			a.CONS_NAME AS "consumerName",
+			b.BID_POWER as "bidPower",
+			b.BID_DATE as "bidDate",
+			b.BID_PRICE AS "bidPrice",
+			ba.PARTICIPANTNAME as "participantName",
+			t.SEQ_NAME AS "seqName",
+			  t.TIMESEG_ID as "timeseg_Id"
+
+		FROM JS_AS_CLEARING a,JS_AS_TRADE_BID_CONS b,BA_MARKETPARTICIPANT  ba ,JS_AS_TRADESEQ t
+
+		<where>
+			 a.CONS_NO =b.CONS_NO
+			and
+			a.TRADESEQ_ID=b.TRADESEQ_ID
+			and
+			a.PARTICIPANT_ID=ba.PARTICIPANTID
+			and
+			  ba.PARTICIPANTID =#{participantId}
+			and
+				t.GUID =b.TRADESEQ_ID
+
+			<if test="consumerNumber != null and  consumerNumber!=''">
+				and a.CONS_NO like concat (concat ('%',#{consumerNumber}),'%')
+			</if>
+            <if test="clearStatus != null and  clearStatus!=''">
+                and a.CLEARING_STATE like concat (concat ('%',#{clearStatus}),'%')
+            </if>
+			<if test="callTime != null and  callTime!=''">
+				and date_format(a.CALLING_TIME,'%Y-%m-%d')  like concat (concat ('%',#{callTime}),'%')
+			</if>
+			ORDER BY  date_format(a.CALLING_TIME,'%Y-%m-%d') desc  ,	 t.TIMESEG_ID desc
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select> -->
+
+	<select id="getTimeSeqId" resultType="map">
+		select  case TIMESEG_ID
+				when '1' then  '0-8时'
+	 			when  '2' then '8-12时'
+	  			when  '3' then '12-17时'
+				when  '4' then '17-21时'
+				when  '5' then '21-24时'
+	end AS "timeseqId"  from JS_AS_TRADESEQ WHERE GUID =#{tradeSeqId}
+	</select>
+
+	<select id="getInterval" resultType="String">
+		select  interval  from JS_AS_TIME_SEGMENT s ,JS_AS_TRADESEQ t where  t.GUID =#{tradeSeqId} AND t.TIMESEG_ID =s.SORT
+	</select>
+
+
+</mapper>

@@ -1,0 +1,36 @@
+<style type="text/css">  
+     #tab_bar {  
+         width: 338px;  
+         /* height: 25px;  */ 
+         /* float: left;  */ 
+         overflow: auto;
+     }  
+     #tab_bar ul {  
+         padding: 0px;  
+         margin: 0px;  
+         /* height: 25px;   */
+         text-align: center;  
+       /*   border-bottom: 1px solid #dfdfdf; */
+     }  
+       
+     #tab_bar li {  
+		 list-style-type: none;  
+		 float: left;  
+         width: 170px;  
+         border: 1px solid #dfdfdf;
+		 border-bottom: 1px solid #dfdfdf;
+		 font-size: 14px;
+		 cursor: pointer;
+		 vertical-align :middle;
+         color: #416AA3;
+         font-weight:bold;
+		 height: 30px;
+		 line-height: 30px;
+     }  
+     #tab_bar span {  
+     	vertical-align :middle;
+        color: #416AA3;
+        font-weight:bold;
+     }  
+       
+ </style>  

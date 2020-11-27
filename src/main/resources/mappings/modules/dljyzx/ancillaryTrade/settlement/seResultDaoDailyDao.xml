@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.thinkgem.jeesite.modules.dljyzx.dao.ancillaryTrade.settlement.SeResultDailyDao">
+
+	<sql id="seResultDailyColumns">
+		a.GUID AS "guId",
+		a.TRADESEQ_ID AS "tradeseqId",
+		date_format(a.SE_DATE,'%Y-%m-%d') AS "seDate",
+		a.CONS_NO AS "consumerNumber",
+		date_format(a.YEAR_MONTH,'%Y-%m') AS "yearMonth",
+		a.BASELINE_POWER AS "baseLinePower",
+		a.BID_POWER as "bidPower",
+		a.REAL_POWER AS  "realPower",
+		a.ACCURACY as  "accuRacy",
+		a.SE_FEE AS "seFee",
+		a.SELLER as "seller",
+		a.ADD_PRICE as "addPrice",
+		a.ADD_MONEY as "addMoney",
+		a.ASS_PRICE as "assPrice",
+		a.ASS_MONEY as "assMoney",
+		a.CONS_PENALTY as "consumberPenalty",
+		a.SELLER_PENALTY as  "sellerPenalty",
+		a.CONS_SHARE as "consumberShare",
+		a.SELLER_SHARE as "sellerShare",
+		a.REAL_REGUL_POWER as "realReguPower",
+		ba.PARTICIPANTNAME as "participantName",
+		tr.SEQ_NAME  AS "seqName",
+		case a.STATUS
+		when  '1' then '已确认'
+		when  '0' then '未确认'
+		when  '2' then '有异议'
+		end as "status"
+
+	</sql>
+<select id="getTradeseqId" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.SeResultDaily">
+	select
+	tr.GUID  as "tradeseqId" ,
+	tr.SEQ_NAME as "seqName"
+	 from JS_AS_TRADESEQ  tr ,JS_AS_SE_RESULT a
+	 WHERE
+	  date_format(tr.ADJUST_DATE ,'%Y-%m-%d') = #{adjustDate}
+	  and   a.PARTICIPANTID =#{participantId}
+		and   tr.GUID = a.TRADESEQ_ID
+</select>
+
+
+	<select id="havefindList" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.SeResultDaily">
+		select
+		a.GUID AS "guId",
+		a.TRADESEQ_ID AS "tradeseqId",
+
+		a.ACTUAL_AVG_POWER as  "realTimeAverageLoad",
+		date_format(a.SE_DATE,'%Y-%m-%d') AS "seDate",
+		a.CONS_NO AS "consumerNumber",
+		date_format(a.YEAR_MONTH,'%Y-%m') AS "yearMonth",
+
+		a.BASELINE_POWER as  "baseLinePower",
+		a.PARTICIPANTID AS "participantId",
+		a.PARTICIPANT_NAME AS "participantName",
+
+		a.BID_POWER as  "bidPower",
+		a.REAL_POWER as  "realPower",
+		a.ACCURACY as  "accuRacy",
+		a.SE_FEE as  "seFee",
+		a.SELLER as "seller",
+		a.ADD_PRICE as  "addPrice",
+		a.ADD_MONEY as  "addMoney",
+		a.ASS_PRICE as  "assPrice",
+		a.ASS_MONEY as  "assMoney",
+		a.CONS_PENALTY as  "consumberPenalty",
+		a.SELLER_PENALTY as  "sellerPenalty",
+		a.CONS_SHARE as  "consumberShare",
+		a.SELLER_SHARE as  "sellerShare",
+		a.REAL_REGUL_POWER as  "realReguPower",
+		date_format(tr.ADJUST_DATE ,'%Y-%m-%d') as "adjustDate" ,
+		tr.SEQ_NAME  AS "seqName",
+		ts.INTERVAL  AS "interval" ,
+		case a.STATUS
+		when  '1' then '已确认'
+		when  '0' then '未确认'
+		when  '2' then '有异议'
+		end as "status"
+		from JS_AS_SE_RESULT a,
+		JS_AS_TRADESEQ  tr ,
+		JS_AS_TIME_SEGMENT  ts
+		<where>
+			a.PARTICIPANTID =#{participantId}
+			and
+			tr.GUID = a.TRADESEQ_ID
+			and  date_format(tr.ADJUST_DATE ,'%Y-%m-%d') =#{adjustDate}
+			and  tr.TIMESEG_ID = ts.ID
+
+			<if test="consumerNumber != null and  consumerNumber!=''">
+			and a.CONS_NO like concat (concat ('%',#{consumerNumber}),'%')
+			</if>
+			<if test="yearMonth != null and  yearMonth!=''">
+				and date_format(a.YEAR_MONTH,'%Y-%m-%d')  like concat (concat ('%',#{yearMonth}),'%')
+			</if>
+			<if test="status != null and  status!=''">
+			and  a.STATUS  =#{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+
+	</select>
+	<select id="findList" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.SeResultDaily">
+		select distinct
+-- 		tr.SEQ_NAME  AS "seqName",
+-- 		a.TRADESEQ_ID AS "tradeseqId",
+-- 		a.SELLER as "seller",
+		date_format(tr.ADJUST_DATE,'%Y-%m-%d') AS "adjustDate",
+-- 		date_format(a.SE_DATE,'%Y-%m-%d') AS "seDate",
+		date_format(a.YEAR_MONTH,'%Y-%m') AS "yearMonth"
+		 from JS_AS_SE_RESULT a,BA_MARKETPARTICIPANT  ba  ,JS_AS_TRADESEQ  tr
+		<where>
+			a.PARTICIPANTID =#{participantId}
+			and
+			a.PARTICIPANTID  = ba.PARTICIPANTID
+			and
+			tr.GUID = a.TRADESEQ_ID
+
+			<if test="yearMonth != null and  yearMonth!=''">
+				and date_format(a.YEAR_MONTH,'%Y-%m-%d')  like concat (concat ('%',#{yearMonth}),'%')
+			</if>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+
+
+	</select>
+
+
+	<select id="getSingleInfo" resultType="com.thinkgem.jeesite.modules.dljyzx.entity.ancillaryTrade.settlememt.SeResultDaily">
+		select   <include refid="seResultDailyColumns" />
+		from  JS_AS_SE_RESULT a,BA_MARKETPARTICIPANT  ba  ,JS_AS_TRADESEQ  tr
+		<where>
+			a.PARTICIPANTID =#{participantId}
+			and
+			a.PARTICIPANTID  = ba.PARTICIPANTID
+			and
+			tr.GUID = a.TRADESEQ_ID
+			and
+			a.GUID =#{guId}
+		</where>
+	</select>
+	<update id="updateStatus">
+		update   JS_AS_SE_RESULT set STATUS =#{status}  ,EXPLAIN =#{explainText}  where GUID =#{guId}
+	</update>
+	<update id="confirmStatus">
+		update   JS_AS_SE_RESULT set STATUS ='1', EXPLAIN =#{explainText}
+		 where
+		TRADESEQ_ID =(SELECT  GUID FROM JS_AS_TRADESEQ WHERE date_format(ADJUST_DATE ,'%Y-%m-%d') = #{adjustDate})
+		  and
+		  PARTICIPANTID =#{participantId}
+
+		  and STATUS ='0'
+		  <if test="null!= guId and  guId!='' ">
+			  and  GUID = #{guId}
+		  </if>
+		<if test="status!= null and  status!='' ">
+			and  STATUS = #{status}
+		</if>
+
+
+	</update>
+	<update id="recallStatus">
+		update   JS_AS_SE_RESULT set STATUS ='0', EXPLAIN =#{explainText}
+		 where
+		 TRADESEQ_ID =#{tradeseqId}
+		 and
+		  PARTICIPANTID =#{participantId}
+		  and
+		  GUID =#{guId}
+
+		  and STATUS ='2'
+	</update>
+
+	<select id="getNumber" resultType="map">
+		SELECT COUNT(*)  as "count" FROM T_MX_ATTACHMENT where  PK_VAL =#{guId}
+	</select>
+
+	<select id="getSeqName" resultType="String">
+		SELECT SEQ_NAME FROM JS_AS_TRADESEQ  WHERE GUID = #{tradeseqId}
+	</select>
+
+
+
+</mapper>
